@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="ja"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><title>ロディーのスピードぼうけん</title>
+<style>
+*{box-sizing:border-box}html,body{width:100%;height:100%;overflow:hidden}body{margin:0;background:#b9edff;color:#304461;font-family:Meiryo,"Yu Gothic",sans-serif;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}.game{position:relative;width:min(100vw,1100px);height:100vh;height:100dvh;min-height:520px;margin:auto;background:#8cdbff;overflow:hidden;border:5px solid white;border-radius:20px;box-shadow:0 10px 32px #456b8050}canvas{width:100%;height:100%;display:block}.hud{position:absolute;top:10px;left:12px;right:12px;display:flex;justify-content:space-between;align-items:start;pointer-events:none;gap:8px}.pill{background:#fffc;border:3px solid white;border-radius:16px;padding:8px 13px;font-weight:900;font-size:clamp(14px,2.4vw,21px);box-shadow:0 4px #50779844}.controls{position:absolute;left:14px;right:14px;bottom:max(14px,env(safe-area-inset-bottom));display:flex;justify-content:space-between;align-items:end;pointer-events:none}.group{display:flex;gap:10px}.control{pointer-events:auto;border:4px solid white;border-radius:22px;min-width:72px;min-height:72px;padding:8px 13px;-webkit-appearance:none;background:#ffffffdd;color:#304461;font:bold 26px Meiryo,sans-serif;box-shadow:0 6px #50779855;touch-action:none}.control:active,.control.down{transform:translateY(4px);box-shadow:0 2px #50779855}.jump{background:#ffd35b;min-width:116px;font-size:21px}.overlay{position:absolute;inset:0;z-index:5;background:#264d6988;display:grid;place-items:center;padding:14px}.card{background:#fff9e9;border:7px solid white;border-radius:28px;padding:20px;text-align:center;width:min(700px,96%);box-shadow:0 10px #325a7277}.card h1{margin:0;color:#ed785f;font-size:clamp(24px,5vw,42px)}.card p{font-size:clamp(15px,2.5vw,19px);font-weight:bold}.choices{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:14px}.choice{border:4px solid white;border-radius:16px;padding:8px 10px;background:#fff;font-weight:bold;color:#345;box-shadow:0 4px #9995}.choice.sel{outline:5px solid #ffca45;transform:translateY(-3px)}.dot{display:block;width:35px;height:35px;border-radius:50%;margin:auto auto 4px;border:3px solid #945a52}.start{border:0;border-radius:20px;padding:14px 24px;background:#ffd35b;color:#304461;font:bold 20px Meiryo;box-shadow:0 5px #d79d35}.hidden{display:none!important}.toast{position:absolute;top:23%;left:50%;transform:translate(-50%,-10px);background:#fffdf0;border:4px solid white;border-radius:18px;padding:10px 17px;font-weight:900;font-size:clamp(18px,4vw,26px);z-index:3;opacity:0;transition:.2s;pointer-events:none;white-space:nowrap}.toast.show{opacity:1;transform:translate(-50%,0)}@media(min-width:700px){.controls{left:24px;right:24px;bottom:max(20px,env(safe-area-inset-bottom))}.group{gap:14px}.control{min-width:82px;min-height:82px;font-size:32px}.jump{min-width:132px;font-size:23px}}@media(max-height:600px){.control{min-width:60px;min-height:60px}.jump{min-width:94px}.game{min-height:100vh;border-radius:0}}
+</style>
+<div class="game" id="game"><canvas id="c"></canvas><div class="hud"><div class="pill" id="level">🌈 ロディーのぼうけん</div><div class="pill">⭐ <span id="stars">0</span>　🟤 <span id="mud">0</span></div></div><div class="toast" id="toast"></div><div class="controls"><div class="group"><button class="control" data-key="left">◀</button><button class="control" data-key="right">▶</button></div><button class="control jump" data-key="jump">ジャンプ！</button></div><style>.wash{position:absolute;inset:0;z-index:8;background:#31566eaa;display:grid;place-items:center;padding:12px}.wash.hidden{display:none!important}.washcard{width:min(680px,96%);background:#fff9e9;border:7px solid white;border-radius:25px;padding:15px;text-align:center}.washcard h2{margin:0;color:#ed785f}.washcard p{font-weight:bold}.washstage{position:relative;width:min(430px,90vw);height:250px;margin:8px auto;background:linear-gradient(#b9eeff 0 65%,#e3f7cb 65%);border:4px solid white;border-radius:20px;overflow:hidden}.washhorse{position:absolute;width:260px;max-width:74%;left:50%;top:50%;transform:translate(-50%,-47%);filter:drop-shadow(0 6px 3px #4565)}.spot{position:absolute;width:27px;height:25px;border:0;border-radius:50%;background:#875331;color:white;font:bold 16px sans-serif;box-shadow:inset -3px -3px #56381f}.spot.gone{display:none}.spot[data-spot="0"]{left:29%;top:53%}.spot[data-spot="1"]{left:43%;top:66%}.spot[data-spot="2"]{left:57%;top:50%}.spot[data-spot="3"]{left:67%;top:62%}.spot[data-spot="4"]{left:49%;top:36%}.washbuttons{display:flex;justify-content:center;flex-wrap:wrap;gap:8px}.washbtn{border:0;border-radius:17px;padding:11px 13px;font:bold 16px Meiryo;background:#8bdcf4;color:#345;box-shadow:0 4px #7296a6}.washbtn.active{outline:4px solid #ffc943}.washbtn.finish{background:#ffd35b}.washmsg{font-weight:bold;color:#527b48;min-height:24px}</style>
+<div class="wash hidden" id="wash"><section class="washcard"><h2>🧼 おそうじ屋さん</h2><p>ロディーのどろをタップしてきれいにしよう！</p><div class="washstage"><svg class="washhorse" viewBox="0 0 360 300" aria-label="ロディーにまたがる子ども"><ellipse cx="144" cy="188" rx="96" ry="61" fill="COLOR" stroke="#a95e31" stroke-width="7"/><path d="M192 180Q209 160 210 129Q210 100 230 83Q249 67 269 85Q289 101 280 124Q278 140 261 153Q250 170 239 190Z" fill="COLOR" stroke="#a95e31" stroke-width="7"/><ellipse cx="278" cy="124" rx="17" ry="13" fill="COLOR" stroke="#a95e31" stroke-width="6"/><path d="M233 86Q222 62 230 38Q249 47 250 80Z M263 83Q270 61 287 58Q291 76 276 96Z" fill="COLOR" stroke="#a95e31" stroke-width="6"/><path d="M74 224L71 253Q72 268 91 268L105 261L105 224M119 236L120 258Q123 272 142 269L154 261L151 223M184 232L184 258Q189 273 208 267L219 257L216 218" fill="COLOR" stroke="#a95e31" stroke-width="7"/><path d="M124 133Q155 121 183 140Q171 153 143 151Q131 148 124 133Z" fill="#d94c55" stroke="#a95e31" stroke-width="5"/><path d="M83 150Q100 137 115 144M202 111Q215 99 227 104" fill="none" stroke="white" stroke-opacity=".55" stroke-width="6" stroke-linecap="round"/><g fill="#f28b45"><circle cx="77" cy="188" r="9"/><circle cx="112" cy="223" r="6"/><circle cx="142" cy="180" r="8"/><circle cx="190" cy="190" r="9"/><circle cx="167" cy="222" r="6"/></g><ellipse cx="264" cy="104" rx="8" ry="9" fill="white"/><circle cx="267" cy="104" r="4.5" fill="#243747"/><ellipse cx="293" cy="122" rx="2" ry="3" fill="#7e4631"/><path d="M274 139Q284 145 292 138" fill="none" stroke="#a95e31" stroke-width="3"/><g stroke="#344b72" stroke-width="9" stroke-linecap="round" fill="none"><path d="M146 131Q134 150 129 169M164 131Q181 148 189 168"/></g><g fill="#ffcf94"><circle cx="155" cy="106" r="15"/><ellipse cx="128" cy="171" rx="10" ry="7"/><ellipse cx="190" cy="171" rx="10" ry="7"/></g><path d="M141 126Q155 114 169 127L176 151L147 154Z" fill="#4a9bd3"/><path d="M142 130L127 148M171 130L185 149" stroke="#ffcf94" stroke-width="7" stroke-linecap="round"/><path d="M141 106Q143 89 157 90Q172 91 171 108Q158 100 141 111Z" fill="#68432f"/></svg><button class="spot" data-spot="0">×</button><button class="spot" data-spot="1">×</button><button class="spot" data-spot="2">×</button><button class="spot" data-spot="3">×</button><button class="spot" data-spot="4">×</button></div><div class="washbuttons"><button class="washbtn" id="soap">🫧 せっけん</button><button class="washbtn" id="sponge">🧽 スポンジ</button><button class="washbtn" id="shower">🚿 シャワー</button><button class="washbtn finish" id="back" disabled>✨ ぼうけんにもどる</button></div><div class="washmsg" id="washMsg"></div></section></div><div class="overlay" id="overlay"><section class="card"><h1>ロディーのスピードぼうけん</h1><p>ロディーをえらんでね！星を集めて、おそうじ屋さんを目指そう</p><div class="choices" id="choices"></div><p>◀ ▶ はしる　／　ジャンプ！で とびこえる</p><button class="start" id="start">ぼうけんスタート！</button></section></div></div>
+<script>
+const COLORS=[["あか","#f36e75"],["みずいろ","#69c8e8"],["きいろ","#ffd45b"],["ピンク","#f48ab1"],["オレンジ","#ff9956"],["みどり","#77c967"]];
+let chosen=0,run=false,done=false,world=0,stars=0,mud=0,toastTimer=0,washing=false,cleanTool="";
+const canvas=document.getElementById('c'),ctx=canvas.getContext('2d'),game=document.getElementById('game'),keys={left:false,right:false,jump:false};
+const player={x:100,y:0,vx:0,vy:0,w:48,h:56,ground:false,face:1};
+let platforms=[],items=[],puddles=[],friends=[];
+function build(){
+ platforms=[{x:0,y:0,w:4700,h:100}];
+ // y is defined relative to the ground surface (base ground is at 0)
+ platforms.push({x:330,y:-95,w:150,h:18},{x:770,y:-145,w:180,h:18},{x:1240,y:-95,w:155,h:18},{x:2050,y:-120,w:180,h:18},{x:2780,y:-100,w:180,h:18},{x:3500,y:-145,w:200,h:18});
+ items=[260,390,530,700,850,1010,1160,1320,1510,1720,2020,2180,2380,2700,2870,3100,3470,3650,3830,4020,4230].map((x,i)=>({x,y:(i%4===2?-135:-48),got:false}));
+ puddles=[{x:610,w:95},{x:1080,w:110},{x:1810,w:120},{x:2440,w:110},{x:3220,w:125}];
+ friends=[{x:-45,c:1},{x:-100,c:3},{x:-155,c:4}];
+}
+function resize(){let r=game.getBoundingClientRect(),d=Math.min(devicePixelRatio||1,2);canvas.width=r.width*d;canvas.height=r.height*d;ctx.setTransform(d,0,0,d,0,0)}addEventListener('resize',resize);resize();build();
+const choices=document.getElementById('choices');COLORS.forEach(([n,c],i)=>{let b=document.createElement('button');b.className='choice'+(!i?' sel':'');b.innerHTML='<span class="dot" style="background:'+c+'"></span>'+n;b.onclick=()=>{chosen=i;document.querySelectorAll('.choice').forEach((x,j)=>x.classList.toggle('sel',i===j))};choices.append(b)});
+function say(s){let t=document.getElementById('toast');t.textContent=s;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),1500)}
+function groundY(x){return H-155}
+let W=900,H=600,cam=0;
+function drawRody(x,y,color,scale=1,rider=false,dirty=false,face=1){
+ ctx.save();ctx.translate(x,y);ctx.scale(scale*(face<0?-1:1),scale);ctx.lineJoin='round';ctx.lineCap='round';
+ const outline='#a95e31';ctx.lineWidth=3.2;ctx.fillStyle=color;ctx.strokeStyle=outline;
+ // Compact pony body with four short, rounded legs
+ [[-22,18],[-7,20],[13,19],[27,14]].forEach(([lx,ly])=>{ctx.beginPath();ctx.ellipse(lx,ly,8,12,-.1,0,Math.PI*2);ctx.fill();ctx.stroke()});
+ ctx.beginPath();ctx.ellipse(-2,0,31,25,-.04,0,Math.PI*2);ctx.fill();ctx.stroke();
+ // Raised chest, curved neck and a larger pony head
+ ctx.beginPath();ctx.moveTo(10,-18);ctx.bezierCurveTo(18,-32,15,-48,25,-60);ctx.bezierCurveTo(34,-72,52,-65,57,-53);ctx.bezierCurveTo(65,-43,61,-33,53,-26);ctx.bezierCurveTo(48,-19,43,-12,36,-7);ctx.closePath();ctx.fill();ctx.stroke();
+ // Soft muzzle and nose
+ ctx.beginPath();ctx.ellipse(57,-37,13,10,.08,0,Math.PI*2);ctx.fill();ctx.stroke();
+ // Long ears and pink inner ear
+ ctx.beginPath();ctx.moveTo(28,-59);ctx.bezierCurveTo(19,-76,24,-94,32,-95);ctx.bezierCurveTo(43,-87,42,-71,38,-58);ctx.closePath();ctx.fill();ctx.stroke();
+ ctx.beginPath();ctx.moveTo(44,-62);ctx.bezierCurveTo(47,-77,58,-86,64,-80);ctx.bezierCurveTo(68,-70,58,-60,52,-54);ctx.closePath();ctx.fill();ctx.stroke();
+ ctx.fillStyle='#ffc5ce';ctx.beginPath();ctx.ellipse(31,-78,3,10,-.1,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(57,-72,3,7,.45,0,Math.PI*2);ctx.fill();
+ // Red saddle, shine, and Rody's round orange markings
+ ctx.fillStyle='#d94c55';ctx.beginPath();ctx.moveTo(-15,-22);ctx.quadraticCurveTo(0,-31,19,-24);ctx.quadraticCurveTo(12,-15,-5,-15);ctx.closePath();ctx.fill();ctx.stroke();
+ ctx.fillStyle='rgba(255,255,255,.45)';ctx.beginPath();ctx.ellipse(-18,-18,9,3,-.6,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(43,-48,7,3,-.8,0,Math.PI*2);ctx.fill();
+ ctx.fillStyle='#f28b45';[[-25,-1,4],[-16,13,3],[0,-2,3.5],[23,3,4],[14,15,3]].forEach(([sx,sy,sr])=>{ctx.beginPath();ctx.arc(sx,sy,sr,0,Math.PI*2);ctx.fill()});
+ // Friendly eye, nostril, and smile
+ ctx.fillStyle='white';ctx.beginPath();ctx.ellipse(48,-49,7,8,.1,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#8c6149';ctx.lineWidth=1.4;ctx.stroke();ctx.fillStyle='#243747';ctx.beginPath();ctx.arc(50,-49,3.5,0,Math.PI*2);ctx.fill();ctx.fillStyle='#7e4631';ctx.beginPath();ctx.ellipse(67,-38,1.6,2.4,0,0,7);ctx.fill();ctx.strokeStyle=outline;ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(58,-29,5,.2,1.6);ctx.stroke();
+ if(dirty){ctx.fillStyle='#78502f';[[-29,-10],[-13,15],[7,-6],[25,9]].forEach(([dx,dy])=>{ctx.beginPath();ctx.ellipse(dx,dy,4,3,0,0,7);ctx.fill()})}
+ // Child sitting astride the pony, with bent legs hanging on both sides
+ if(rider){
+  ctx.strokeStyle='#344b72';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(-4,-30);ctx.quadraticCurveTo(-17,-20,-19,-9);ctx.moveTo(7,-30);ctx.quadraticCurveTo(18,-20,22,-8);ctx.stroke();
+  ctx.fillStyle='#ffcf94';ctx.beginPath();ctx.ellipse(-20,-8,6,4,-.2,0,7);ctx.ellipse(23,-7,6,4,.2,0,7);ctx.fill();
+  ctx.fillStyle='#4a9bd3';ctx.beginPath();ctx.roundRect(-9,-43,19,18,6);ctx.fill();
+  ctx.strokeStyle='#ffcf94';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(-8,-40);ctx.lineTo(-17,-29);ctx.moveTo(8,-40);ctx.lineTo(17,-29);ctx.stroke();
+  ctx.fillStyle='#ffcf94';ctx.beginPath();ctx.arc(0,-54,8.5,0,7);ctx.fill();ctx.fillStyle='#68432f';ctx.beginPath();ctx.arc(0,-57,8.5,Math.PI,Math.PI*2);ctx.lineTo(8,-54);ctx.quadraticCurveTo(0,-60,-8,-54);ctx.closePath();ctx.fill();
+ }
+ ctx.restore()
+}function draw(){
+ let r=game.getBoundingClientRect();W=r.width;H=r.height;ctx.clearRect(0,0,W,H);
+ // far hills and clouds
+ ctx.fillStyle='#d9f6ff';for(let i=0;i<6;i++){let x=((i*210-cam*.18)%(W+220)+W+220)%(W+220)-60;ctx.beginPath();ctx.arc(x,145,44,0,7);ctx.arc(x+42,153,34,0,7);ctx.fill()}
+ ctx.fillStyle='#84ce67';for(let i=0;i<7;i++){let x=((i*230-cam*.3)%(W+250)+W+250)%(W+250)-80;ctx.beginPath();ctx.ellipse(x,H-104,150,130,0,Math.PI,Math.PI*2);ctx.fill()}
+ // ground and floating platforms
+ for(let p of platforms){let x=p.x-cam;if(x>W||x+p.w<0)continue;let y=H-125+p.y;ctx.fillStyle='#a4df79';ctx.fillRect(x,y,p.w,130);ctx.fillStyle='#6dbd57';ctx.fillRect(x,y,p.w,13);ctx.fillStyle='#8b5d3e';ctx.fillRect(x,y+13,p.w,9);ctx.fillStyle='#9b6b45';for(let tx=x+12;tx<x+p.w;tx+=36){ctx.fillRect(tx,y+36,5,5);ctx.fillRect(tx+15,y+65,4,5)}}
+ // puddles
+ for(let p of puddles){let x=p.x-cam;if(x>-p.w&&x<W){let y=H-125;ctx.fillStyle='#43b7e5';ctx.beginPath();ctx.ellipse(x+p.w/2,y+4,p.w/2,18,0,0,7);ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=4;ctx.stroke();ctx.fillStyle='white';ctx.font='18px sans-serif';ctx.fillText('〜 ✦',x+18,y+9)}}
+ // stars
+ for(let it of items)if(!it.got){let x=it.x-cam;if(x>-20&&x<W+20){let y=H-125+it.y+Math.sin(performance.now()/250+it.x)*4;ctx.fillStyle='#ffd245';ctx.strokeStyle='#ec9f30';ctx.lineWidth=2;ctx.beginPath();for(let q=0;q<10;q++){let a=-Math.PI/2+q*Math.PI/5,rad=q%2?7:15;ctx.lineTo(x+Math.cos(a)*rad,y+Math.sin(a)*rad)}ctx.closePath();ctx.fill();ctx.stroke()}}
+ // wash hut near goal
+ let hx=4380-cam;if(hx<W+100){ctx.fillStyle='#ffdf92';ctx.fillRect(hx,H-228,100,103);ctx.fillStyle='#e66f68';ctx.beginPath();ctx.moveTo(hx-12,H-228);ctx.lineTo(hx+50,H-280);ctx.lineTo(hx+112,H-228);ctx.fill();ctx.fillStyle='#fff';ctx.fillRect(hx+34,H-190,32,65);ctx.fillStyle='#4b9fc1';ctx.fillRect(hx+8,H-210,20,20);ctx.font='bold 16px Meiryo';ctx.fillStyle='#345';ctx.fillText('おそうじ',hx+6,H-286)}
+ // friends trail
+ for(let f of friends){let fx=player.x-60+(f.x);drawRody(fx-cam,player.y+12,COLORS[f.c][1],.7,false,mud>0,player.face)}
+ drawRody(player.x-cam,player.y,COLORS[chosen][1],1,true,mud>0,player.face);
+}
+let last=0;
+function tick(t){if(!run||washing){draw();requestAnimationFrame(tick);return}let dt=Math.min((t-last)/16.67||1,2);last=t;
+ if(keys.left){player.vx-=.55*dt;player.face=-1}if(keys.right){player.vx+=.55*dt;player.face=1}
+ player.vx*=Math.pow(.91,dt);player.vx=Math.max(-8,Math.min(11,player.vx));player.x+=player.vx*dt;
+ if(keys.jump&&player.ground){player.vy=-13;player.ground=false}player.vy+=.62*dt;player.y+=player.vy*dt;
+ let gy=groundY(player.x);player.ground=false;if(player.y>=gy){player.y=gy;player.vy=0;player.ground=true}
+ // land on raised platforms
+ for(let p of platforms){if(p.y<0&&player.x+15>p.x&&player.x-15<p.x+p.w){let py=H-125+p.y;if(player.y+30>=py&&player.y+30<=py+14&&player.vy>=0){player.y=py-30;player.vy=0;player.ground=true}}}
+ for(let p of puddles)if(Math.abs(player.x-(p.x+p.w/2))<p.w/2+16&&Math.abs(player.y+8-(H-125))<35){if(player.ground&&mud<5){mud++;document.getElementById('mud').textContent=mud;say(mud>=3?'どろんこ！おそうじ屋さんへ！':'バシャバシャ！ロディーがよごれたよ')}} 
+ for(let it of items)if(!it.got&&Math.abs(player.x-it.x)<30&&Math.abs(player.y-(H-125+it.y))<42){it.got=true;stars++;document.getElementById('stars').textContent=stars}
+ friends.forEach((f,i)=>f.x+=(player.x-65*(i+1)-f.x)*.07);
+ cam=Math.max(0,player.x-W*.3);if(player.x>4350&&!washing){enterWash()}
+ if(player.y>H+150){player.x=Math.max(80,player.x-140);player.y=groundY(player.x);player.vy=0;say('もういちどジャンプしてみよう！')}
+ draw();requestAnimationFrame(tick)}
+document.getElementById('start').onclick=()=>{document.getElementById('overlay').classList.add('hidden');run=true;player.y=H-155;player.x=100;last=performance.now();say('なかまたちと しゅっぱつ！')};
+document.querySelectorAll('.control').forEach(b=>{let k=b.dataset.key;const on=e=>{e.preventDefault();keys[k]=true;b.classList.add('down');if(b.setPointerCapture)b.setPointerCapture(e.pointerId)},off=e=>{e.preventDefault();keys[k]=false;b.classList.remove('down')};b.addEventListener('pointerdown',on);['pointerup','pointercancel','lostpointercapture'].forEach(ev=>b.addEventListener(ev,off))});
+addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='a')keys.left=true;if(e.key==='ArrowRight'||e.key==='d')keys.right=true;if(e.key===' '||e.key==='ArrowUp')keys.jump=true});addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key==='a')keys.left=false;if(e.key==='ArrowRight'||e.key==='d')keys.right=false;if(e.key===' '||e.key==='ArrowUp')keys.jump=false});
+requestAnimationFrame(tick);
+function enterWash(){washing=true;keys.left=keys.right=keys.jump=false;document.getElementById("wash").classList.remove("hidden");document.querySelectorAll(".washhorse [fill=COLOR]").forEach(x=>x.setAttribute("fill",COLORS[chosen][1]));document.querySelectorAll(".spot").forEach((b,i)=>b.classList.toggle("gone",i>=mud));document.getElementById("washMsg").textContent=mud?"せっけんをつけて、どろをタップしてね":"ロディーはもうぴかぴか！";document.getElementById("back").disabled=mud>0;document.getElementById("soap").dataset.used="";document.getElementById("soap").classList.remove("active");document.getElementById("sponge").classList.remove("active");cleanTool=""}
+document.querySelectorAll(".spot").forEach(b=>b.onclick=()=>{if(!cleanTool){document.getElementById("washMsg").textContent="まずスポンジをえらんでね";return}if(document.getElementById("soap").dataset.used!=="yes"){document.getElementById("washMsg").textContent="先に せっけんをつけよう";return}b.classList.add("gone");document.getElementById("washMsg").textContent="ごしごし！ロディーがきれいになってきたよ";if(document.querySelectorAll(".spot:not(.gone)").length===0){document.getElementById("washMsg").textContent="ロディーがぴかぴか！";document.getElementById("back").disabled=false}});
+document.getElementById("soap").onclick=()=>{document.getElementById("soap").dataset.used="yes";document.getElementById("soap").classList.add("active");document.getElementById("washMsg").textContent="せっけんのあわが もこもこ！"};
+document.getElementById("sponge").onclick=()=>{cleanTool="sponge";document.getElementById("sponge").classList.add("active");document.getElementById("washMsg").textContent="どろのところをタップして ごしごし！"};
+document.getElementById("shower").onclick=()=>{document.querySelectorAll(".spot").forEach(b=>b.classList.add("gone"));document.getElementById("washMsg").textContent="シャワーで どろをぜんぶながしたよ！";document.getElementById("back").disabled=false};
+document.getElementById("back").onclick=()=>{mud=0;document.getElementById("mud").textContent="0";stars++;document.getElementById("stars").textContent=stars;document.getElementById("wash").classList.add("hidden");document.getElementById("level").textContent="🌿 ぼうけん中";washing=false;player.x=100;cam=0;say("ぴかぴか！ぼうけんにもどろう ⭐")};</script></html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
