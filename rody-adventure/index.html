@@ -85,6 +85,7 @@ function tick(t){if(!run||washing){draw();requestAnimationFrame(tick);return}let
  cam=Math.max(0,player.x-W*.3);if(player.x>4350&&!washing){enterWash()}
  if(player.y>H+150){player.x=Math.max(80,player.x-140);player.y=groundY(player.x);player.vy=0;say('もういちどジャンプしてみよう！')}
  draw();requestAnimationFrame(tick)}
+const isIPad=/iPad/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);if(isIPad)document.documentElement.classList.add('ipad');
 function enterFullscreen(){const el=document.getElementById('game');try{if(el.requestFullscreen){const p=el.requestFullscreen();if(p&&p.catch)p.catch(()=>el.classList.add('fake-fullscreen'))}else if(el.webkitRequestFullscreen){el.webkitRequestFullscreen()}else{el.classList.add('fake-fullscreen')}}catch{el.classList.add('fake-fullscreen')}}
 function toggleFullscreen(){const el=document.getElementById('game');if(el.classList.contains('fake-fullscreen')){el.classList.remove('fake-fullscreen');return}if(document.fullscreenElement||document.webkitFullscreenElement){if(document.exitFullscreen)document.exitFullscreen();else if(document.webkitExitFullscreen)document.webkitExitFullscreen();return}enterFullscreen()}
 document.getElementById('fullBtn').onclick=toggleFullscreen;document.addEventListener('fullscreenchange',()=>{document.getElementById('fullBtn').textContent=document.fullscreenElement?'⤢':'⛶'});document.addEventListener('webkitfullscreenchange',()=>{document.getElementById('fullBtn').textContent=document.webkitFullscreenElement?'⤢':'⛶'});document.getElementById('start').onclick=()=>{if(isIPad)enterFullscreen();document.getElementById('overlay').classList.add('hidden');run=true;player.y=H-155;player.x=100;last=performance.now();say('なかまたちと しゅっぱつ！')};
@@ -97,6 +98,7 @@ document.getElementById("soap").onclick=()=>{document.getElementById("soap").dat
 document.getElementById("sponge").onclick=()=>{cleanTool="sponge";document.getElementById("sponge").classList.add("active");document.getElementById("washMsg").textContent="どろのところをタップして ごしごし！"};
 document.getElementById("shower").onclick=()=>{document.querySelectorAll(".spot").forEach(b=>b.classList.add("gone"));document.getElementById("washMsg").textContent="シャワーで どろをぜんぶながしたよ！";document.getElementById("back").disabled=false};
 document.getElementById("back").onclick=()=>{mud=0;document.getElementById("mud").textContent="0";stars++;document.getElementById("stars").textContent=stars;document.getElementById("wash").classList.add("hidden");document.getElementById("level").textContent="🌿 ぼうけん中";washing=false;player.x=100;cam=0;say("ぴかぴか！ぼうけんにもどろう ⭐")};</script></html>
+
 
 
 
